@@ -1,37 +1,41 @@
 # cpp-foundation
 
-C++98의 객체 수명, 복사 의미론, 다형성, 변환 경계를 작은 정적
-라이브러리와 명령행 프로그램으로 검증하는 프로젝트다.
+![Language](https://img.shields.io/badge/language-C%2B%2B98-blue?logo=cplusplus&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-POSIX-lightgrey)
 
-## 개발 기준
+42 `CPP00`–`CPP09` 과제를 변형한 C++98 프로젝트입니다. 객체 수명, 복사 대입, 다형성, 형 변환, 템플릿과 예외 안전성을 다루는 정적 라이브러리와 그 라이브러리를 쓰는 예제 프로그램 6개를 만듭니다.
 
-- 모든 제품 코드는 C++98로 컴파일한다.
-- 공개 헤더와 구현 파일의 책임을 분리한다.
-- 소유권과 객체 수명은 형식의 불변식으로 표현한다.
-- 복사 생성, 대입, 소멸 동작을 명시적으로 검토한다.
-- 실패한 연산은 가능한 한 기존 상태를 보존한다.
-- 전역 가변 상태와 숨은 외부 의존성을 두지 않는다.
+## 빌드
 
-## 빌드 기준
+```sh
+make
+```
 
-- 경고를 오류로 처리한다.
-- 정적 라이브러리를 기본 산출물로 사용한다.
-- 예제 프로그램은 공개 API만 소비한다.
-- 생성 파일과 로컬 실행 결과는 버전 관리에서 제외한다.
+산출물은 `build/lib/libcpp_foundation.a`와 `build/bin/ex00_contact_book` … `build/bin/ex05_batch_engine`입니다.
 
-## 검증 기준
+## 실행
 
-- 기능을 추가할 때 정상 경계와 실패 경계를 함께 확인한다.
-- 공개 헤더는 저장소 외부 소비자 관점에서도 컴파일 가능해야 한다.
-- 테스트는 구현 세부사항보다 관찰 가능한 계약을 검증한다.
-- 결정적인 입력은 결정적인 결과를 만들어야 한다.
+```sh
+./build/bin/ex00_contact_book < tests/fixtures/contact-session.in
+./build/bin/ex03_pipeline_factory mixed 'prefix=[' upper 'suffix=]'
+./build/bin/ex04_type_boundary scalar 42.5
+./build/bin/ex05_batch_engine rpn '3 4 +'
+```
 
-## 저장소 원칙
+`ex00`과 `ex05 batch`는 표준 입력에서 한 줄씩 명령을 읽고, 나머지는 인자를 받습니다. 인자 없이 실행하면 각 프로그램이 usage를 출력합니다.
 
-- `include/`에는 공개 헤더를 둔다.
-- `src/`에는 라이브러리 구현을 둔다.
-- `apps/`에는 공개 API를 사용하는 실행 예제를 둔다.
-- `tests/`에는 단위·통합·실패 경계 검증을 둔다.
-- 비밀값, 개인 경로, 환경별 산출물은 커밋하지 않는다.
+## 테스트
 
-기능과 검증 절차는 구현이 안정된 뒤 이 문서에 추가한다.
+```sh
+make test
+```
+
+- `make test-ubsan`, `make test-asan`: sanitizer 빌드로 단위 테스트를 실행합니다.
+- `make check`: `test`에 결정성, 정적 라이브러리 구성, Mach-O 의존성, `leaks` 검사를 더합니다.
+
+## 범위와 제한
+
+- `-std=c++98 -pedantic-errors -Wold-style-cast`로 빌드하므로 C++11 이후 기능은 쓰지 않습니다.
+- `make check`의 정적 라이브러리·의존성·누수 검사는 macOS에서만 동작합니다.
+- `make test-asan`은 `detect_leaks=1`을 켜므로 macOS의 Apple clang에서는 실행 직후 중단됩니다.
+- 예제 프로그램은 라이브러리 API를 호출해 보는 용도이며 독립된 도구가 아닙니다.
